@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
-url = "http://books.toscrape.com/"
+url = "http://books.toscrape.com/catalogue/page-{}.html"
 
 def fetch_site(url):
     response = requests.get(url)
@@ -31,7 +31,15 @@ def save_to_csv(all_books, file_name):
     df = pd.DataFrame(all_books)
     df.to_csv(file_name)
 
-response = fetch_site(url)
-all_books = extract_book_details(response)
-save_to_csv(all_books, "book.csv")
-print(all_books)
+books = []
+i = 1
+while True :
+    response = fetch_site(url.format(i))
+    print(url.format(i))
+    if response :
+        all_books = extract_book_details(response)
+        books = books + all_books
+        i += 1
+    else :
+        break
+save_to_csv(books, "book.csv")
